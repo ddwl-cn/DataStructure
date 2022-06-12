@@ -7,7 +7,7 @@ typedef struct ListNode {
 	struct ListNode* next;
 	struct ListNode* pre;
 }Node, *NodePtr;
-// 单链表定义
+// 双链表定义
 struct List {
 	Node* head;
 	Node* tail;
