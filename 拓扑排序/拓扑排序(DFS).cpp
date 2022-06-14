@@ -6,10 +6,7 @@ using namespace std;
 struct node {
 	// 入度 出度
 	int in, out;
-	node(int in = 0, int out = 0) {
-		this->in = in;
-		this->out = out;
-	}
+	node(int in = 0, int out = 0): in(in), out(out){}
 };
 
 // dfs判断是否有环 图、标记数组、起点、是否有环
