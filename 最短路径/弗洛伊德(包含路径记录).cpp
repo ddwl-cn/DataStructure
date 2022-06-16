@@ -31,9 +31,14 @@ void getPath(int s, int e) {
 	getPath(path[s][e], e);
 }
 void printPath(int s, int e) {
-	getPath(s, e);
-	// 终点单独打印
-	cout << e;
+	if (path[s][e] != 0) {
+		getPath(s, e);
+		// 终点单独打印
+		cout << e;
+	}
+	else {
+		cout << "给定端点不可达！";
+	}
 }
 int main() {
 	cin >> n >> m;
@@ -44,15 +49,16 @@ int main() {
 		cin >> x >> y >> w;
 		G[x][y] = w;
 	}
-	Floyd();
-	for (int i = 1; i <= n; i++) {
-		for (int j = 1; j <= n; j++) {
-			cout << G[i][j] << ' ';
-		}
-		cout << '\n';
-	}
 
-	printPath(1, 3);
+	Floyd();
+	//for (int i = 1; i <= n; i++) {
+	//	for (int j = 1; j <= n; j++) {
+	//		cout << G[i][j] << ' ';
+	//	}
+	//	cout << '\n';
+	//}
+
+	printPath(1, 1);
 	return 0;
 }
 /*
