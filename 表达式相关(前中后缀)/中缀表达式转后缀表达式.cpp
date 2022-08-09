@@ -1,19 +1,29 @@
 #include<iostream>
 #include<stack>
 #include<string>
+#include<algorithm>
+#include<assert.h>
 using namespace std;
 string CHAR2STR(char ch) { string temp; return temp + ch; }
+char STR2CHAR(string s) { return s.c_str()[0]; }
+// 获得字符优先级
+int getPriority(char c) {
+	if (c == '-' || c == '+') return 1;
+	if (c == '*' || c == '/') return 2;
+	return 0;
+}
 // prefix infix suffix
 // 中缀转后缀(逆波兰表达式)
 string IN2SUF(string infix){
 	// 中间栈、结果栈
 	stack<string> s1, s2;
 	for (int i = 0; i < infix.size(); i++) {
+		if (infix[i] == ' ') continue;
 		// 操作数
 		// 多位数字需要拼接一下
 		if (isdigit(infix[i])) {
 			string sub = "";
-			while(i < infix.size() && isdigit(infix[i])) {
+			while(i < infix.size() && (isdigit(infix[i]) || infix[i] == '.')) {
 				sub += infix[i++];
 			}
 			i--;
@@ -35,30 +45,11 @@ string IN2SUF(string infix){
 			}
 			// 运算符
 			else {
-				// 此时s1栈顶是左括号直接入栈
-				if (!s1.empty() && s1.top() == "(") {
+					while (!s1.empty() && getPriority(infix[i]) <= getPriority(STR2CHAR(s1.top()))) {
+						s2.push(s1.top());
+						s1.pop();
+					}
 					s1.push(CHAR2STR(infix[i]));
-				}
-				else {
-					// 如果要压入的是 + 或 - 因为没有运算符优先级比他俩低 所以之前的符号全部从s1中压入s2
-					// 除非遇到 ( 或栈为空 否则s1一直出栈
-					if (infix[i] == '-' || infix[i] == '+') {
-						while (!s1.empty() && s1.top() != "(") {
-							s2.push(s1.top());
-							s1.pop();
-						}
-						s1.push(CHAR2STR(infix[i]));
-					}
-					// 与 + - 类似 只是 * / 有比他俩优先级低的左移可以在遇到 + - 时就停止
-					else if (infix[i] == '*' || infix[i] == '/') {
-						while (!s1.empty() && s1.top() != "+" && s1.top() != "-" && s1.top() != "(") {
-							s2.push(s1.top());
-							s1.pop();
-						}
-						s1.push(CHAR2STR(infix[i]));
-					}
-				}
-
 			}
 		}
 	}
@@ -81,8 +72,46 @@ string IN2SUF(string infix){
 	}
 	return temp;
 }
+double calculateSUFFIX(string suffix) {
+	stack<double> s;
+	for (int i = 0; i < suffix.size(); i++) {
+		if (suffix[i] == ' ') continue;
+		if (isdigit(suffix[i])) {
+			string t = "";
+			while (i < suffix.size() && (isdigit(suffix[i]) || suffix[i] == '.')) {
+				t += suffix[i++];
+			}
+			i--;
+			s.push(stod(t));
+		}
+		else {
+			double a = s.top();
+			s.pop();
+			double b = s.top();
+			s.pop();
+			if (suffix[i] == '+') {
+				s.push(a + b);
+			}
+			else if (suffix[i] == '-') {
+				s.push(b - a);
+			}
+			else if (suffix[i] == '*') {
+				s.push(a * b);
+			}
+			else {
+				s.push(b / a);
+			}
+		}
+	}
+	double t = s.top();
+	s.pop();
+	return t;
+}
 int main() {
 	string s = "(1+2)*((3/5)+1/(45+5)*51-8)";
-	cout << IN2SUF(s);
+	string y = "(1+2)*8";
+
+	cout << "后缀表达式为：" << IN2SUF(s) << endl;
+	cout << "后缀表达式的值为：" << calculateSUFFIX(IN2SUF(s)) << endl;
 	return 0;
 }
